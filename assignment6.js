@@ -141,7 +141,7 @@ const express = require("express");
 const router = express.Router();
 const { User } = require("../models");
 
-// 1️⃣ Signup
+
 router.post("/signup", async (req, res) => {
   try {
     const exists = await User.findOne({ where: { email: req.body.email } });
@@ -155,19 +155,19 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// 2️⃣ Create or Update (skip validation)
+
 router.put("/:id", async (req, res) => {
   const result = await User.upsert(req.body, { validate: false });
   res.json(result);
 });
 
-// 3️⃣ Find by email
+
 router.get("/by-email", async (req, res) => {
   const user = await User.findOne({ where: { email: req.query.email } });
   res.json(user);
 });
 
-// 4️⃣ Find by PK excluding role
+
 router.get("/:id", async (req, res) => {
   const user = await User.findByPk(req.params.id, {
     attributes: { exclude: ["role"] },
@@ -183,14 +183,14 @@ const express = require("express");
 const router = express.Router();
 const { Post, User, Comment, sequelize } = require("../models");
 
-// 1️⃣ Create Post
+
 router.post("/", async (req, res) => {
   const post = new Post(req.body);
   await post.save();
   res.json(post);
 });
 
-// 2️⃣ Delete Post (owner only)
+
 router.delete("/:postId", async (req, res) => {
   const post = await Post.findByPk(req.params.postId);
   if (post.userId !== req.body.userId)
@@ -200,7 +200,7 @@ router.delete("/:postId", async (req, res) => {
   res.json({ message: "Post deleted" });
 });
 
-// 3️⃣ Posts with user & comments
+
 router.get("/details", async (req, res) => {
   const posts = await Post.findAll({
     attributes: ["id", "title"],
@@ -212,7 +212,7 @@ router.get("/details", async (req, res) => {
   res.json(posts);
 });
 
-// 4️⃣ Posts with comment count
+
 router.get("/comment-count", async (req, res) => {
   const posts = await Post.findAll({
     attributes: [
@@ -235,13 +235,13 @@ const router = express.Router();
 const { Comment, User, Post } = require("../models");
 const { Op } = require("sequelize");
 
-// 1️⃣ Bulk create
+
 router.post("/", async (req, res) => {
   const comments = await Comment.bulkCreate(req.body);
   res.json(comments);
 });
 
-// 2️⃣ Update comment (owner only)
+
 router.patch("/:commentId", async (req, res) => {
   const comment = await Comment.findByPk(req.params.commentId);
   if (comment.userId !== req.body.userId)
@@ -252,13 +252,13 @@ router.patch("/:commentId", async (req, res) => {
   res.json(comment);
 });
 
-// 3️⃣ Find or create
+
 router.post("/find-or-create", async (req, res) => {
   const [comment] = await Comment.findOrCreate({ where: req.body });
   res.json(comment);
 });
 
-// 4️⃣ Search and count
+
 router.get("/search", async (req, res) => {
   const result = await Comment.findAndCountAll({
     where: { content: { [Op.like]: `%${req.query.word}%` } },
@@ -266,7 +266,7 @@ router.get("/search", async (req, res) => {
   res.json(result);
 });
 
-// 5️⃣ Newest 3 comments
+
 router.get("/newest/:postId", async (req, res) => {
   const comments = await Comment.findAll({
     where: { postId: req.params.postId },
@@ -276,7 +276,7 @@ router.get("/newest/:postId", async (req, res) => {
   res.json(comments);
 });
 
-// 6️⃣ Comment with User & Post
+
 router.get("/details/:id", async (req, res) => {
   const comment = await Comment.findByPk(req.params.id, {
     include: [User, Post],
@@ -307,3 +307,4 @@ const { sequelize } = require("./models");
 sequelize.sync().then(() => {
   app.listen(3000, () => console.log("Server running on port 3000"));
 });
+
